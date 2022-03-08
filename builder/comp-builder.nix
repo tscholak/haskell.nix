@@ -166,7 +166,8 @@ let
   # From nixpkgs 20.09, the pkg-config exe has a prefix matching the ghc one
   pkgConfigHasPrefix = builtins.compareVersions lib.version "20.09pre" >= 0;
 
-  commonConfigureFlags = ([
+  commonConfigureFlags = (
+    configureFlags ++ [
       # GHC
       "--with-ghc=${ghc.targetPrefix}ghc"
       "--with-ghc-pkg=${ghc.targetPrefix}ghc-pkg"
@@ -214,7 +215,6 @@ let
       ++ lib.optionals haskellLib.isCrossHost (
         map (arg: "--hsc2hs-option=" + arg) (["--cross-compile"] ++ lib.optionals (stdenv.hostPlatform.isWindows) ["--via-asm"])
         ++ lib.optional (package.buildType == "Configure") "--configure-option=--host=${stdenv.hostPlatform.config}" )
-      ++ configureFlags
       ++ (ghc.extraConfigureFlags or [])
       ++ lib.optional enableDebugRTS "--ghc-option=-debug"
       ++ lib.optional enableTSanRTS "--ghc-option=-tsan"
